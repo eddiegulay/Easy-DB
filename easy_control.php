@@ -76,7 +76,7 @@ class easy_control extends easy_db{
     
         }
     }
-
+ 
     // create new table
     public function create_table($table_field_set){
         $q = $this->query_generator("table", $table_field_set);

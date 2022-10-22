@@ -38,7 +38,7 @@ class easy_db {
     private $stmt_reset;
     private $stmt_close;
     private $stmt_get_result;
-    
+     
     // constructor
     public function __construct($host, $user, $pass, $name, $port, $charset) {
         $this->host = $host;
