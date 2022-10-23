@@ -79,7 +79,19 @@ class easy_control extends easy_db{
                 $q = "ALTER TABLE `" . $table_name . "` CHANGE " . $old_field . " " . $new_field . " " . $options;
                 return $q;
                 break;
-        
+            
+            case "select":
+                $table_name = $data['table_name'];
+                $fields = $data['fields'];
+                $conditions = isset($data["conditions"]) ? $data["conditions"] : false;
+                if ($conditions) {
+                    $q = "select " . $fields . " from `" . $table_name . "` where " . $conditions . " ;";
+                } else {
+                    $q = "select " . $fields . " from `" . $table_name . "`;";
+                }
+                return $q;
+                break;
+
             default:
                 break;
     
@@ -129,5 +141,26 @@ class easy_control extends easy_db{
         if(!$query){
             echo "Failed with Error: ". $this->error. ":". $this->errno;
         }
+    }
+
+    // easy fetch object
+    public function easy_object($data){
+        $q = $this->query_generator("select", $data);
+        $res = $this->fetch_object($q);
+        if($res){return $res;}else{return false;}
+    }
+
+    // easy fetch object
+    public function easy_assoc($data){
+        $q = $this->query_generator("select", $data);
+        $res = $this->fetch_assoc($q);
+        if($res){return $res;}else{return false;}
+    }
+
+    // easy fetch object
+    public function easy_array($data){
+        $q = $this->query_generator("select", $data);
+        $res = $this->fetch_array($q);
+        if($res){return $res;}else{return false;}
     }
 }

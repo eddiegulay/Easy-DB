@@ -159,11 +159,32 @@ $data = array(
 $db->change_field($data);
 ```
 
-## Fetch MySQLi result Object
+## Fetch MySQLi result as Object
 
 **Returning result object for manual manipulation**
+*with raw query*
 ```php
 $res =$db->fetch_object("SELECT * FROM test_user");
+```
+*with query generator*
+Create fetch data field in following format
+```
+[
+    "table_name" => $target_table,
+    "fields" => "field_1, field_2",
+    "conditions" => "condition_1 and condition_2 and condition_3"
+]
+```
+
+Example fetch from table `test_user`
+```php
+$data = array(
+    "table_name" => "test_user",
+    "fields" => "*",
+    "conditions" => "id=1"
+);
+
+$res = $db->easy_object($data);
 ```
 *Result Preview*
 ```
@@ -174,5 +195,98 @@ mysqli_result Object
     [lengths] => 
     [num_rows] => 1
     [type] => 0
+)
+```
+### Further operations from object returned
+Get number of rows
+```php
+$num_rows = $res->num_rows;
+```
+Get data as normal array or as associative array
+```php
+$res_array = $res->fetch_array();
+$res_assoc = $res->fetch_assoc();
+```
+And So on ....
+
+
+
+## Fetch MySQLi result as array
+
+**Returning result as array for manual manipulation**
+*with raw query*
+```php
+$res =$db->fetch_array("SELECT * FROM test_user");
+```
+*with query generator*
+Create fetch data field in following format
+```
+[
+    "table_name" => $target_table,
+    "fields" => "field_1, field_2",
+    "conditions" => "condition_1 and condition_2 and condition_3"
+]
+```
+
+Example fetch from table `test_user`
+```php
+$data = array(
+    "table_name" => "test_user",
+    "fields" => "*",
+    "conditions" => "id=1"
+);
+
+$res = $db->easy_array($data);
+```
+*Result Preview*
+```
+Array
+(
+    [0] => 1
+    [id] => 1
+    [1] => Edgar Edward Gulay
+    [user_custom_name] => Edgar Edward Gulay
+    [2] => tracyedgar270@gmail.com
+    [email] => tracyedgar270@gmail.com
+    [3] => qwerd3433
+    [password] => qwerd3433
+)
+```
+
+## Fetch MySQLi result as associative array
+
+**Returning result as associative array for manual manipulation**
+*with raw query*
+```php
+$res =$db->fetch_array("SELECT * FROM test_user");
+```
+*with query generator*
+Create fetch data field in following format
+```
+[
+    "table_name" => $target_table,
+    "fields" => "field_1, field_2",
+    "conditions" => "condition_1 and condition_2 and condition_3"
+]
+```
+
+Example fetch from table `test_user`
+```php
+$data = array(
+    "table_name" => "test_user",
+    "fields" => "*",
+    "conditions" => "id=1"
+);
+
+$res = $db->easy_assoc($data);
+```
+*Result Preview*
+```
+Array
+(
+    [id] => 1
+    [user_custom_name] => Edgar Edward Gulay
+    [email] => tracyedgar270@gmail.com
+    [password] => qwerd3433
 )
 ```
