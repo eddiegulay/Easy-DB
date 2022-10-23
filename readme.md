@@ -1,9 +1,16 @@
 # Easy DB
+## Installing
+### Clone the repository to project dir
+```bash
+git clone "https://github.com/eddygulled/Easy-DB.git"
+```
+### Include the EasyDB class
+```php
+require_once('easy_control.php');
+```
 
 ## Creating Connection
 ```php
-require_once('easy_control.php');
-
 // create new database connection
 $host = "";
 $user = "";
