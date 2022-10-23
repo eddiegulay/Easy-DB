@@ -74,6 +74,17 @@ class easy_db {
         return true;
     }
 
+    public function fetch_object($query) {
+        $this->query = $query;
+        $this->result = $this->db->query($this->query);
+        if (!$this->result) {
+            $this->error = $this->db->error;
+            $this->errno = $this->db->errno;
+            return false;
+        }
+        return $this->result;
+    }
+
     // prepare
     public function prepare($query) {
         $this->query = $query;
@@ -211,17 +222,6 @@ class easy_db {
     public function fetch_all() {
         $this->stmt_fetch_all = $this->stmt->fetch_all();
         if (!$this->stmt_fetch_all) {
-            $this->stmt_error = $this->stmt->error;
-            $this->stmt_errno = $this->stmt->errno;
-            return false;
-        }
-        return true;
-    }
-
-    // fetch_object
-    public function fetch_object() {
-        $this->stmt_fetch_object = $this->stmt->fetch_object();
-        if (!$this->stmt_fetch_object) {
             $this->stmt_error = $this->stmt->error;
             $this->stmt_errno = $this->stmt->errno;
             return false;

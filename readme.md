@@ -158,3 +158,21 @@ $data = array(
 
 $db->change_field($data);
 ```
+
+## Fetch MySQLi result Object
+
+**Returning result object for manual manipulation**
+```php
+$res =$db->fetch_object("SELECT * FROM test_user");
+```
+*Result Preview*
+```
+mysqli_result Object
+(
+    [current_field] => 0
+    [field_count] => 4
+    [lengths] => 
+    [num_rows] => 1
+    [type] => 0
+)
+```
