@@ -1,4 +1,12 @@
 # Easy DB
+
+Easy DB is a simple database wrapper for PHP. Designed to speed up production by reducing code redundancy.
+
+## Contributors
+* Gulay, Edgar
+* Gulam, Rohit
+
+
 ## Installing
 ### Clone the repository to project dir
 ```bash
@@ -150,7 +158,7 @@ $db->update($data);
     "options" => $field_extra_options
 ]
 ```
-*If you don't want to change field name pass in the current field name in `field_name_update`
+* If you don't want to change field name pass in the current field name in `field_name_update`
 
 
 **Example**
@@ -296,4 +304,24 @@ Array
     [email] => tracyedgar270@gmail.com
     [password] => qwerd3433
 )
+```
+
+## Delete Data Row
+**Create data field set with respective values to update in following format**
+```
+[
+    "table_name" => $table_name,
+    "conditions" => "condition_1 and condition_2 and ..... and condition_n"
+]
+```
+* Don't provide conditions if you want to delete all data in table
+
+**Example delete from table `test_user` where `id`=`1`**
+```php
+$data = array(
+    "table_name" => "test_user",
+    "conditions" => "id=1"
+);
+
+$db->delete_row($data);
 ```

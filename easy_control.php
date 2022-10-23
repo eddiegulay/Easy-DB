@@ -92,6 +92,17 @@ class easy_control extends easy_db{
                 return $q;
                 break;
 
+            case "delete":
+                $table_name = $data['table_name'];
+                $conditions = isset($data["conditions"]) ? $data["conditions"] : false;
+                if ($conditions) {
+                    $q = "DELETE FROM `" . $table_name . "` where " . $conditions . " ;";
+                } else {
+                    $q = "DELETE FROM `" . $table_name . "`;";
+                }
+                return $q;
+                break;
+
             default:
                 break;
     
@@ -162,5 +173,14 @@ class easy_control extends easy_db{
         $q = $this->query_generator("select", $data);
         $res = $this->fetch_array($q);
         if($res){return $res;}else{return false;}
+    }
+
+    // delete row
+    public function delete_row($data){
+        $q = $this->query_generator("delete", $data);
+        $query = $this->query($q);
+        if(!$query){
+            echo "Failed with Error: ". $this->error. ":". $this->errno;
+        }
     }
 }
