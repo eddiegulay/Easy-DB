@@ -71,6 +71,15 @@ class easy_control extends easy_db{
                 return $q;
                 break;
 
+            case "change_field":
+                $table_name = $data['table_name'];
+                $old_field = $data['field_name'];
+                $new_field = isset($data['field_name_update']) ? str_replace(" ", "_", $data['field_name_update']) : false;
+                $options = $data['options'];
+                $q = "ALTER TABLE `" . $table_name . "` CHANGE " . $old_field . " " . $new_field . " " . $options;
+                return $q;
+                break;
+        
             default:
                 break;
     
@@ -107,6 +116,15 @@ class easy_control extends easy_db{
     // update data in table
     public function update($data){
         $q = $this->query_generator("update", $data);
+        $query = $this->query($q);
+        if(!$query){
+            echo "Failed with Error: ". $this->error. ":". $this->errno;
+        }
+    }
+
+    // change field
+    public function change_field($data){
+        $q = $this->query_generator("change_field", $data);
         $query = $this->query($q);
         if(!$query){
             echo "Failed with Error: ". $this->error. ":". $this->errno;

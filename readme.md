@@ -132,3 +132,29 @@ Then call
 ```php
 $db->update($data);
 ```
+
+## Changing table field
+**Create data field set with respective values to update in following format**
+```
+[
+    "table_name" =>  $table_name,
+    "field_name" => $target_field,
+    "field_name_update" => $new_field_name,
+    "options" => $field_extra_options
+]
+```
+*If you don't want to change field name pass in the current field name in `field_name_update`
+
+
+**Example**
+Updating field `email` from `test_user` table to `user_email` with text `datatype`
+```php
+$data = array(
+    "table_name" => "test_user",
+    "field_name" => "email",
+    "field_name_update" => "user_email",
+    "options" => "TEXT"
+);
+
+$db->change_field($data);
+```
