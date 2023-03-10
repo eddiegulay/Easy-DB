@@ -2,10 +2,6 @@
 
 Easy DB is a simple database wrapper for PHP. Designed to speed up production by reducing code redundancy.
 
-## Contributors
-* [Gulay, Edgar](https://github.com/eddygulled/)
-* [Gulam, Rohit](https://github.com/rohitgulam/)
-
 
 ## Installing
 ### Clone the repository to project dir

@@ -1,10 +1,10 @@
 <?php
 require_once('easy_db.php');
-
-
 // create table
 class easy_control extends easy_db{
-
+    private $error;
+    private $errno;
+    
     // query generator
     private function query_generator($state, $data){
         switch($state){
@@ -172,6 +172,13 @@ class easy_control extends easy_db{
     public function easy_array($data){
         $q = $this->query_generator("select", $data);
         $res = $this->fetch_array($q);
+        if($res){return $res;}else{return false;}
+    }
+
+    // easy fetch num rows
+    public function easy_num_rows($data){
+        $q = $this->query_generator("select", $data);
+        $res = $this->num_rows($q);
         if($res){return $res;}else{return false;}
     }
 

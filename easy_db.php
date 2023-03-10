@@ -17,27 +17,8 @@ class easy_db {
     private $charset;
     private $result;
     private $query;
-    private $stmt;
-    private $stmt_affected_rows;
-    private $stmt_insert_id;
-    private $stmt_num_rows;
-    private $stmt_field_count;
-    private $stmt_store_result;
-    private $stmt_bind_result;
-    private $stmt_bind_param;
-    private $stmt_fetch;
-    private $stmt_fetch_array;
-    private $stmt_fetch_assoc;
-    private $stmt_fetch_row;
-    private $stmt_fetch_field;
-    private $stmt_fetch_fields;
-    private $stmt_fetch_field_direct;
-    private $stmt_fetch_all;
-    private $stmt_data_seek;
-    private $stmt_free_result;
-    private $stmt_reset;
-    private $stmt_close;
-    private $stmt_get_result;
+    private $error;
+    private $errno;
      
     // constructor
     public function __construct($host, $user, $pass, $name, $port, $charset) {
