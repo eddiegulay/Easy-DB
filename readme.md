@@ -1,18 +1,22 @@
 # Easy DB
 
 Easy DB is a simple database wrapper for PHP. Designed to speed up production by reducing code redundancy.
+it contains a query generator that can be used to generate queries for common database operations.
+
 
 ## Installing
+
 ### Clone the repository to project dir
 ```bash
 git clone "https://github.com/eddygulled/Easy-DB.git"
 ```
+
 ### Include the EasyDB class
 ```php
 require_once('easy_control.php');
 ```
 
-## Creating Connection
+### Creating Connection
 ```php
 // create new database connection
 $host = "";
@@ -32,7 +36,7 @@ if(!$db){
 
 ## Creating table
 **Create field set list with the following format**
-```
+```php
 [
     ["table_name" => $table_name],
     [
@@ -66,6 +70,7 @@ $table_field_set = array(
         "data_type" => "text",
     ]
 );
+
 ```
 **Then call**
 ```php
@@ -80,7 +85,7 @@ $db->drop_table("test_user");
 
 ## Inserting Data
 **Create data field set with the following format**
-```
+```php
 [
     "table_name" => $table_name,
     "field_1" => $value_1,
@@ -301,6 +306,13 @@ Array
 )
 ```
 
+to get a series list of rows  call
+```php
+easy_fetch_assoc_all($data)
+OR
+fetch_assoc_all($query_string)
+```
+
 ## Delete Data Row
 **Create data field set with respective values to update in following format**
 ```
@@ -320,7 +332,3 @@ $data = array(
 
 $db->delete_row($data);
 ```
-
-## Contributors
-* [Gulay, Edgar](https://github.com/eddygulled/)
-* [Gulam, Rohit](https://github.com/rohitgulam/)
