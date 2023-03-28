@@ -1,12 +1,4 @@
 <?php
-// database manager class for easy_db with mysqli
-
-/**usage documentation
- * 
- * $db = new easy_db('localhost', 'root', 'password', 'database');
- * 
- */
-
 class easy_db {
     private $db;
     private $host;
@@ -43,6 +35,9 @@ class easy_db {
         $this->db->close();
     }
 
+    // return raw mysqli object
+    public function get_mysqli_con(){return $this->db;}
+
     // query
     public function query($query) {
         $this->query = $query;
@@ -50,7 +45,7 @@ class easy_db {
         if (!$this->result) {
             $this->error = $this->db->error;
             $this->errno = $this->db->errno;
-            return false;
+            return [$this->error, $this->errno];
         }
         return true;
     }
@@ -61,7 +56,7 @@ class easy_db {
         if (!$this->result) {
             $this->error = $this->db->error;
             $this->errno = $this->db->errno;
-            return false;
+            return [$this->error, $this->errno];
         }
         return $this->result;
     }
@@ -101,8 +96,8 @@ class easy_db {
         }
         return $this->result->num_rows;
     }
+
+    public function get_last_insert_id(){return $this->db->insert_id;}
     
 }
-
-
 ?>

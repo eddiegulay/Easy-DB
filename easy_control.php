@@ -4,6 +4,12 @@ require_once('easy_db.php');
 class easy_control extends easy_db{
     private $error;
     private $errno;
+
+    // Escape values to prevent SQL injection
+    private function escape_value($value) {
+        $escaped_value = str_replace("'", "''", $value);
+        return $escaped_value;
+    }
     
     // query generator
     private function query_generator($state, $data){
@@ -33,25 +39,22 @@ class easy_control extends easy_db{
                 break;
 
             case "insert":
-                $keys = array_keys($data);
-    
-                $q = "INSERT INTO `".$data["table_name"]."` (";
-                $key_set = "";
-                foreach($keys as $key){
-                    if($key == "table_name"){continue;}
-                    $key_set = $key_set.$key.",";
+                $table_name = $data['table_name'];
+                $q = "INSERT INTO `$table_name` (";
+                $columns = array();
+                $values = array();
+                foreach ($data as $key => $value) {
+                    if ($key == 'table_name') {
+                        continue;
+                    }
+                    $escaped_value = $this->escape_value($value);
+                    $columns[] = "`$key`";
+                    $values[] = "'$escaped_value'";
                 }
-                $key_set = substr($key_set, 0,-1);
-                
-                $value_set = "";
-                foreach($data as $value){
-                    if($data["table_name"] == $value){continue;}
-                    $value_set = $value_set."'".$value."',";
-                }
-                $value_set = substr($value_set, 0,-1);
-                
-                $q = $q.$key_set.") VALUES (".$value_set.");";
-                
+                $q .= implode(', ', $columns);
+                $q .= ") VALUES (";
+                $q .= implode(', ', $values);
+                $q .= ")";
                 return $q;
     
                 break;
@@ -60,14 +63,20 @@ class easy_control extends easy_db{
                 $table_name = $data['table_name'];
                 $q = "UPDATE `" . $table_name . "` SET ";
                 foreach ($data['values'] as $key => $value) {
-                    $q = $q . $key . " = '" . $value . "',";
+                    $escaped_value = $this->escape_value($value);
+                    $q .= "`$key` = '$escaped_value', ";
                 }
-                $q = substr($q, 0, -1);
-                $q = $q . " WHERE ";
+                $q = rtrim($q, ", ");
+                $q .= " WHERE ";
+                $i = 0;
                 foreach ($data['conditions'] as $key => $value) {
-                    $q = $q . $key . " = '" . $value . "',";
+                    $escaped_value = $this->escape_value($value);
+                    $q .= "`$key` = '$escaped_value'";
+                    if ($i < count($data['conditions']) - 1) {
+                        $q .= " AND ";
+                    }
+                    $i++;
                 }
-                $q = substr($q, 0, -1);
                 return $q;
                 break;
 
@@ -130,19 +139,18 @@ class easy_control extends easy_db{
     // insert into table
     public function insert($data){
         $q = $this->query_generator("insert", $data);
+        echo $q;
         $query = $this->query($q);
-        if(!$query){
-            echo "Failed with Error: ". $this->error. ":". $this->errno;
-        }
+        if($query == true){return true;}
+        else{return false;};
     }
 
     // update data in table
     public function update($data){
         $q = $this->query_generator("update", $data);
         $query = $this->query($q);
-        if(!$query){
-            echo "Failed with Error: ". $this->error. ":". $this->errno;
-        }
+        if($query == true){return true;}
+        else{return false;};
     }
 
     // change field
@@ -161,6 +169,27 @@ class easy_control extends easy_db{
         if($res){return $res;}else{return false;}
     }
 
+    // easy fetch assoc all
+    public function easy_fetch_assoc_all($data){
+        $response = array();
+        $q = $this->query_generator("select", $data);
+        $res = $this->fetch_object($q);
+        while($row = $res->fetch_assoc()) {
+            $response[] = $row;
+        }
+        if($res){return $response;}else{return false;}
+    }
+
+    //fetch assoc all
+    public function fetch_assoc_all($q){
+        $response = array();
+        $res = $this->fetch_object($q);
+        while($row = $res->fetch_assoc()) {
+            $response[] = $row;
+        }
+        if($res){return $response;}else{return false;}
+    }
+
     // easy fetch object
     public function easy_assoc($data){
         $q = $this->query_generator("select", $data);
@@ -168,7 +197,7 @@ class easy_control extends easy_db{
         if($res){return $res;}else{return false;}
     }
 
-    // easy fetch object
+    // easy fetch array
     public function easy_array($data){
         $q = $this->query_generator("select", $data);
         $res = $this->fetch_array($q);
