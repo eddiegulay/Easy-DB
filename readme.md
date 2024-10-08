@@ -1,158 +1,214 @@
-## easy_control Library
+# Easy DB Wrapper
 
-### Overview
+This is a simple and easy-to-use PHP database wrapper for MySQL using the `mysqli` extension. It simplifies common database operations like executing queries, inserting data, updating records, and more.
 
-The `easy_control` class extends the `easy_db` class to provide a comprehensive set of database management functions. These include creating tables, inserting data, updating data, fetching data, and more. This library is designed to simplify interactions with a MySQL database using PHP's `mysqli` extension.
+## Getting Started
+
+### Requirements
+- PHP 7.4 or higher
+- MySQL Server
+- `mysqli` extension enabled
 
 ### Installation
-
-1. Ensure you have PHP installed on your system.
-2. Place the `easy_db.php` file in your project directory.
-
-### Usage
-
-Here's a step-by-step guide on how to use the `easy_db` class.
-
-#### 1. Include the Library
-
-First, include the `easy_db.php` file in your PHP script.
+Simply include the `easy_db.php` file in your project and instantiate the `easy_db` class with your database credentials.
 
 ```php
-require_once('easy_db.php');
+require_once 'easy_db.php';
+$db = new easy_db('localhost', 'username', 'password', 'database_name', 3306, 'utf8mb4');
 ```
 
-#### 2. Initialize the easy_control Object
+## Usage
 
-Create an instance of the `easy_control` class by providing the necessary database connection parameters.
-
-```php
-$db = new easy_control('host', 'username', 'password', 'database_name', 'port', 'charset');
-```
-
-Example:
+### Creating an Instance
+To start using the `easy_db` wrapper, create an instance by passing the database credentials:
 
 ```php
-$db = new easy_control('localhost', 'root', 'password', 'my_database', 3306, 'utf8');
-```
-
-#### 3. Create a Table
-
-Define the table structure and use the `create_table` method to create a new table.
-
-```php
-$table_structure = [
-    ['table_name' => 'users'],
-    ['field' => 'id', 'data_type' => 'INT AUTO_INCREMENT', 'options' => 'PRIMARY KEY'],
-    ['field' => 'username', 'data_type' => 'VARCHAR(50)', 'options' => 'NOT NULL'],
-    ['field' => 'email', 'data_type' => 'VARCHAR(100)', 'options' => 'NOT NULL'],
-    ['field' => 'created_at', 'data_type' => 'TIMESTAMP', 'options' => 'DEFAULT CURRENT_TIMESTAMP']
-];
-
-$db->create_table($table_structure);
-```
-
-#### 4. Insert Data
-
-Insert a row of data into a table using the `insert` method.
-
-```php
-$insert_data = [
-    'table_name' => 'users',
-    'username' => 'john_doe',
-    'email' => 'john@example.com'
-];
-
-$db->insert($insert_data);
-```
-
-#### 5. Update Data
-
-Update existing data in a table using the `update` method.
-
-```php
-$update_data = [
-    'table_name' => 'users',
-    'values' => [
-        'email' => 'john_doe@example.com'
-    ],
-    'conditions' => [
-        'username' => 'john_doe'
-    ]
-];
-
-$db->update($update_data);
-```
-
-#### 6. Fetch Data
-
-Fetch a single row as an associative array using the `easy_assoc` method.
-
-```php
-$select_data = [
-    'table_name' => 'users',
-    'fields' => '*',
-    'conditions' => [
-        'username' => 'john_doe'
-    ]
-];
-
-$user = $db->easy_assoc($select_data);
-print_r($user);
-```
-
-Fetch all rows as an associative array using the `easy_fetch_assoc_all` method.
-
-```php
-$select_data_all = [
-    'table_name' => 'users',
-    'fields' => '*'
-];
-
-$users = $db->easy_fetch_assoc_all($select_data_all);
-print_r($users);
-```
-
-#### 7. Delete Data
-
-Delete a row from a table using the `delete_row` method.
-
-```php
-$delete_data = [
-    'table_name' => 'users',
-    'conditions' => [
-        'username' => 'john_doe'
-    ]
-];
-
-$db->delete_row($delete_data);
-```
-
-### Methods Summary
-
-- **create_table($table_field_set)**: Creates a new table based on the provided structure.
-- **drop_table($table_name)**: Drops the specified table.
-- **insert($data)**: Inserts a new row into the specified table.
-- **update($data)**: Updates existing rows in the specified table.
-- **change_field($data)**: Changes the definition of a field in the specified table.
-- **easy_object($data)**: Fetches a single row as an object.
-- **easy_fetch_assoc_all($data)**: Fetches all rows as an associative array.
-- **fetch_assoc_all($q)**: Fetches all rows as an associative array based on a custom query.
-- **easy_assoc($data)**: Fetches a single row as an associative array.
-- **easy_array($data)**: Fetches a single row as a numeric array.
-- **easy_num_rows($data)**: Returns the number of rows for a given select query.
-- **delete_row($data)**: Deletes rows from the specified table based on conditions.
-
-### Error Handling
-
-To get the last error encountered during a database operation, use the `get_last_error` method from the `easy_db` class.
-
-```php
-$error = $db->get_last_error();
-if ($error['errno']) {
-    echo "Error ({$error['errno']}): {$error['error']}";
+try {
+    $db = new easy_db('localhost', 'username', 'password', 'database_name', 3306, 'utf8mb4');
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
 }
 ```
 
-### Conclusion
+### Executing Queries
+You can execute a basic SQL query using the `query()` method.
 
-The `easy_control` class provides a straightforward and secure way to manage MySQL database operations in PHP. By following this guide, you can quickly integrate database management functionalities into your PHP projects.
+```php
+$result = $db->query("SELECT * FROM users");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        print_r($row);
+    }
+} else {
+    echo "Query failed: " . $db->get_last_error()['error'];
+}
+```
+
+### Prepared Statements
+To execute a prepared statement with parameters, use the `prepare()` method.
+
+```php
+$query = "INSERT INTO users (name, email) VALUES (?, ?)";
+$params = ['John Doe', 'john@example.com'];
+$stmt = $db->prepare($query, $params);
+
+if ($stmt) {
+    echo "Record inserted successfully.";
+} else {
+    echo "Failed to insert record: " . $db->get_last_error()['error'];
+}
+```
+
+### Fetching Data
+- **Fetch a Single Row as an Object**
+
+```php
+$user = $db->fetch_object("SELECT * FROM users WHERE id = 1");
+if ($user) {
+    echo $user->name;
+} else {
+    echo "No user found.";
+}
+```
+
+- **Fetch a Single Row as an Associative Array**
+
+```php
+$user = $db->fetch_assoc("SELECT * FROM users WHERE id = 1");
+if ($user) {
+    echo $user['name'];
+} else {
+    echo "No user found.";
+}
+```
+
+- **Fetch All Rows as an Associative Array**
+
+```php
+$users = $db->fetch_all_assoc("SELECT * FROM users");
+if ($users) {
+    foreach ($users as $user) {
+        echo $user['name'] . "<br>";
+    }
+} else {
+    echo "No users found.";
+}
+```
+
+### Inserting Data
+Use the `insert()` method to insert data into a table.
+
+```php
+$data = [
+    'table_name' => 'users',
+    'name' => 'Jane Doe',
+    'email' => 'jane@example.com'
+];
+$result = $db->insert($data);
+if ($result) {
+    echo "Record inserted successfully.";
+} else {
+    echo "Failed to insert record: " . $db->get_last_error()['error'];
+}
+```
+
+### Updating Data
+Use the `update()` method to update existing records.
+
+```php
+$data = [
+    'table_name' => 'users',
+    'values' => ['email' => 'jane.doe@example.com'],
+    'conditions' => ['id' => 1]
+];
+$result = $db->update($data);
+if ($result) {
+    echo "Record updated successfully.";
+} else {
+    echo "Failed to update record: " . $db->get_last_error()['error'];
+}
+```
+
+### Deleting Data
+Use the `delete_row()` method to delete records.
+
+```php
+$data = [
+    'table_name' => 'users',
+    'conditions' => ['id' => 1]
+];
+$result = $db->delete_row($data);
+if ($result) {
+    echo "Record deleted successfully.";
+} else {
+    echo "Failed to delete record: " . $db->get_last_error()['error'];
+}
+```
+
+### Getting Last Insert ID
+To get the ID of the last inserted record, use `get_last_insert_id()`:
+
+```php
+$last_id = $db->get_last_insert_id();
+echo "Last inserted ID: " . $last_id;
+```
+
+### Escaping Strings
+To safely escape strings before using them in queries, use `easy_escape_string()`:
+
+```php
+$name = $db->easy_escape_string("O'Reilly");
+$query = "SELECT * FROM users WHERE name = '$name'";
+$result = $db->query($query);
+```
+
+## QueryBuilder
+The `QueryBuilder` class helps generate common SQL queries like CREATE, INSERT, UPDATE, and DELETE without writing raw SQL.
+
+### Example Usage of QueryBuilder
+
+- **Build a CREATE TABLE Query**
+
+```php
+$data = [
+    [
+        'table_name' => 'users'
+    ],
+    [
+        'field' => 'id',
+        'data_type' => 'INT AUTO_INCREMENT PRIMARY KEY'
+    ],
+    [
+        'field' => 'name',
+        'data_type' => 'VARCHAR(100)'
+    ],
+    [
+        'field' => 'email',
+        'data_type' => 'VARCHAR(100)'
+    ]
+];
+$query = QueryBuilder::buildTableQuery($data);
+$db->query($query);
+```
+
+- **Build an INSERT Query**
+
+```php
+$data = [
+    'table_name' => 'users',
+    'name' => 'John Smith',
+    'email' => 'john.smith@example.com'
+];
+$query = QueryBuilder::buildInsertQuery($data);
+$db->query($query);
+```
+
+## License
+This project is open-source and available under the [MIT License](LICENSE).
+
+## Contributing
+Feel free to contribute by opening issues or submitting pull requests to improve the library.
+
+## Support
+If you encounter any issues or have questions, feel free to reach out by creating an issue on the GitHub repository.
+

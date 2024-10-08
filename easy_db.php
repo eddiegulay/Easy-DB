@@ -1,12 +1,23 @@
 <?php
-// database manager class for easy_db with mysqli
+// Database manager class for easy_db with mysqli
 
 class easy_db {
     private $db;
     private $error;
     private $errno;
 
-    // constructor
+    /**
+     * Constructor to initialize a database connection.
+     *
+     * @param string $host     Database host address.
+     * @param string $user     Database username.
+     * @param string $pass     Database password.
+     * @param string $name     Database name.
+     * @param int    $port     Database port number.
+     * @param string $charset  Character set to use.
+     *
+     * @throws Exception If the database connection fails.
+     */
     public function __construct($host, $user, $pass, $name, $port, $charset) {
         $this->db = new mysqli($host, $user, $pass, $name, $port);
         if ($this->db->connect_errno) {
@@ -17,19 +28,31 @@ class easy_db {
         $this->db->set_charset($charset);
     }
 
-    // destructor
+    /**
+     * Destructor to close the database connection when the object is destroyed.
+     */
     public function __destruct() {
         if ($this->db) {
             $this->db->close();
         }
     }
 
-    // Get last error
+    /**
+     * Get the last error information.
+     *
+     * @return array An associative array containing 'error' and 'errno'.
+     */
     public function get_last_error() {
         return ['error' => $this->error, 'errno' => $this->errno];
     }
 
-    // query
+    /**
+     * Execute a query.
+     *
+     * @param string $query SQL query to execute.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function query($query) {
         $result = $this->db->query($query);
         if (!$result) {
@@ -40,7 +63,15 @@ class easy_db {
         return $result;
     }
 
-    // prepared statement execution
+    /**
+     * Execute a prepared statement with parameters.
+     *
+     * @param string $query  SQL query with placeholders.
+     * @param array  $params Parameters to bind to the query.
+     * @param string $types  Data types of the parameters (optional).
+     *
+     * @return mixed Prepared statement on success, false on failure.
+     */
     public function prepare($query, $params, $types = "") {
         $stmt = $this->db->prepare($query);
         if (!$stmt) {
@@ -66,7 +97,13 @@ class easy_db {
         return $stmt;
     }
 
-    // fetch_object
+    /**
+     * Fetch a single row as an object.
+     *
+     * @param string $query SQL query to execute.
+     *
+     * @return mixed An object representing the row on success, false on failure.
+     */
     public function fetch_object($query) {
         $result = $this->query($query);
         if (!$result) {
@@ -75,7 +112,13 @@ class easy_db {
         return $result->fetch_object();
     }
 
-    // fetch_assoc
+    /**
+     * Fetch a single row as an associative array.
+     *
+     * @param string $query SQL query to execute.
+     *
+     * @return mixed An associative array representing the row on success, false on failure.
+     */
     public function fetch_assoc($query) {
         $result = $this->query($query);
         if (!$result) {
@@ -84,7 +127,13 @@ class easy_db {
         return $result->fetch_assoc();
     }
 
-    // fetch_all_assoc
+    /**
+     * Fetch all rows as an associative array.
+     *
+     * @param string $query SQL query to execute.
+     *
+     * @return mixed An array of associative arrays representing all rows on success, false on failure.
+     */
     public function fetch_all_assoc($query) {
         $result = $this->query($query);
         if (!$result) {
@@ -93,7 +142,13 @@ class easy_db {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    // num_rows
+    /**
+     * Get the number of rows from the result of a query.
+     *
+     * @param string $query SQL query to execute.
+     *
+     * @return mixed Number of rows on success, false on failure.
+     */
     public function num_rows($query) {
         $result = $this->query($query);
         if (!$result) {
@@ -102,11 +157,22 @@ class easy_db {
         return $result->num_rows;
     }
 
-    // get last insert id
+    /**
+     * Get the last insert ID.
+     *
+     * @return int ID of the last inserted row.
+     */
     public function get_last_insert_id() {
         return $this->db->insert_id;
     }
 
+    /**
+     * Escape a string for safe use in SQL queries.
+     *
+     * @param string $string The string to escape.
+     *
+     * @return string The escaped string.
+     */
     public function easy_escape_string($string) {
         return $this->db->real_escape_string($string);
     }
@@ -114,6 +180,13 @@ class easy_db {
 
 class QueryBuilder
 {
+    /**
+     * Build a CREATE TABLE query.
+     *
+     * @param array $data Array of field definitions for the table.
+     *
+     * @return string The CREATE TABLE SQL query.
+     */
     public static function buildTableQuery($data)
     {
         $table_name = str_replace(" ", "_", $data[0]["table_name"]);
@@ -134,6 +207,13 @@ class QueryBuilder
         return $q;
     }
 
+    /**
+     * Build an INSERT query.
+     *
+     * @param array $data Data to insert into the table.
+     *
+     * @return string The INSERT SQL query.
+     */
     public static function buildInsertQuery($data)
     {
         $table_name = $data['table_name'];
@@ -151,6 +231,13 @@ class QueryBuilder
         return $q;
     }
 
+    /**
+     * Build an UPDATE query.
+     *
+     * @param array $data Data to update in the table.
+     *
+     * @return string The UPDATE SQL query.
+     */
     public static function buildUpdateQuery($data)
     {
         $table_name = $data['table_name'];
@@ -169,6 +256,13 @@ class QueryBuilder
         return $q;
     }
 
+    /**
+     * Build a CHANGE FIELD query.
+     *
+     * @param array $data Data to change the field in the table.
+     *
+     * @return string The ALTER TABLE CHANGE SQL query.
+     */
     public static function buildChangeFieldQuery($data)
     {
         $table_name = $data['table_name'];
@@ -179,6 +273,13 @@ class QueryBuilder
         return $q;
     }
 
+    /**
+     * Build a SELECT query.
+     *
+     * @param array $data Data for selecting fields from the table.
+     *
+     * @return string The SELECT SQL query.
+     */
     public static function buildSelectQuery($data)
     {
         $table_name = $data['table_name'];
@@ -196,6 +297,13 @@ class QueryBuilder
         return $q;
     }
 
+    /**
+     * Build a DELETE query.
+     *
+     * @param array $data Data for deleting rows from the table.
+     *
+     * @return string The DELETE SQL query.
+     */
     public static function buildDeleteQuery($data)
     {
         $table_name = $data['table_name'];
@@ -212,6 +320,13 @@ class QueryBuilder
         return $q;
     }
 
+    /**
+     * Escape a value for safe use in SQL queries.
+     *
+     * @param mixed $value The value to escape.
+     *
+     * @return string The escaped value.
+     */
     private static function escapeValue($value)
     {
         // Implement your value escaping mechanism here
@@ -224,19 +339,42 @@ class easy_control extends easy_db
 {
     private $error;
     private $errno;
-    // Constructor to initialize the database connection
+
+    /**
+     * Constructor to initialize the database connection.
+     *
+     * @param string $host     Database host address.
+     * @param string $user     Database username.
+     * @param string $pass     Database password.
+     * @param string $name     Database name.
+     * @param int    $port     Database port number.
+     * @param string $charset  Character set to use.
+     */
     public function __construct($host, $user, $pass, $name, $port, $charset)
     {
         parent::__construct($host, $user, $pass, $name, $port, $charset);
     }
 
-    // Escape values to prevent SQL injection
+    /**
+     * Escape a value for safe use in SQL queries.
+     *
+     * @param mixed $value The value to escape.
+     *
+     * @return string The escaped value.
+     */
     private function escape_value($value) {
         $escaped_value = $this->easy_escape_string($value);
         return $escaped_value;
     }
 
-    // query generator
+    /**
+     * Generate a query based on the state and data provided.
+     *
+     * @param string $state Type of query to generate (e.g., "table", "insert", "update").
+     * @param array  $data  Data for building the query.
+     *
+     * @return string The generated SQL query.
+     */
     private function query_generator($state, $data)
     {
         switch ($state) {
@@ -263,56 +401,104 @@ class easy_control extends easy_db
         }
     }
 
-    // create new table
+    /**
+     * Create a new table in the database.
+     *
+     * @param array $table_field_set Array of field definitions for the table.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function create_table($table_field_set)
     {
         $q = $this->query_generator("table", $table_field_set);
         return $this->query($q);
     }
 
-    // drop table
+    /**
+     * Drop a table from the database.
+     *
+     * @param string $table_name Name of the table to drop.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function drop_table($table_name)
     {
         $q = "DROP TABLE `$table_name`;";
         return $this->query($q);
     }
 
-    // insert into table
+    /**
+     * Insert data into a table.
+     *
+     * @param array $data Data to insert into the table.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function insert($data)
     {
         $q = $this->query_generator("insert", $data);
         return $this->query($q);
     }
 
-    // update data in table
+    /**
+     * Update data in a table.
+     *
+     * @param array $data Data to update in the table.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function update($data)
     {
         $q = $this->query_generator("update", $data);
         return $this->query($q);
     }
 
-    // change field
+    /**
+     * Change a field in a table.
+     *
+     * @param array $data Data for changing the field in the table.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function change_field($data)
     {
         $q = $this->query_generator("change_field", $data);
         return $this->query($q);
     }
 
-    // easy fetch object
+    /**
+     * Fetch a single row as an object using generated query data.
+     *
+     * @param array $data Data for selecting fields from the table.
+     *
+     * @return mixed An object representing the row on success, false on failure.
+     */
     public function easy_object($data)
     {
         $q = $this->query_generator("select", $data);
         return $this->fetch_object($q);
     }
 
-    // easy fetch assoc all
+    /**
+     * Fetch all rows as an associative array using generated query data.
+     *
+     * @param array $data Data for selecting fields from the table.
+     *
+     * @return mixed An array of associative arrays representing all rows on success, false on failure.
+     */
     public function easy_fetch_assoc_all($data)
     {
         $q = $this->query_generator("select", $data);
         return $this->fetch_assoc_all($q);
     }
 
-    // fetch assoc all
+    /**
+     * Fetch all rows as an associative array from a query.
+     *
+     * @param string $q SQL query to execute.
+     *
+     * @return mixed An array of associative arrays representing all rows on success, false on failure.
+     */
     public function fetch_assoc_all($q)
     {
         $response = array();
@@ -327,14 +513,26 @@ class easy_control extends easy_db
         }
     }
 
-    // easy fetch assoc
+    /**
+     * Fetch a single row as an associative array using generated query data.
+     *
+     * @param array $data Data for selecting fields from the table.
+     *
+     * @return mixed An associative array representing the row on success, false on failure.
+     */
     public function easy_assoc($data)
     {
         $q = $this->query_generator("select", $data);
         return $this->fetch_assoc($q);
     }
 
-    // easy fetch array
+    /**
+     * Fetch a single row as a numerical array using generated query data.
+     *
+     * @param array $data Data for selecting fields from the table.
+     *
+     * @return mixed A numerical array representing the row on success, false on failure.
+     */
     public function easy_array($data)
     {
         $q = $this->query_generator("select", $data);
@@ -342,14 +540,26 @@ class easy_control extends easy_db
         return $res ? $res->fetch_array() : false;
     }
 
-    // easy fetch num rows
+    /**
+     * Get the number of rows from the result of a query using generated query data.
+     *
+     * @param array $data Data for selecting fields from the table.
+     *
+     * @return mixed Number of rows on success, false on failure.
+     */
     public function easy_num_rows($data)
     {
         $q = $this->query_generator("select", $data);
         return $this->num_rows($q);
     }
 
-    // delete row
+    /**
+     * Delete rows from a table using generated query data.
+     *
+     * @param array $data Data for deleting rows from the table.
+     *
+     * @return mixed Result set on success, false on failure.
+     */
     public function delete_row($data)
     {
         $q = $this->query_generator("delete", $data);
